@@ -17,6 +17,7 @@
   </head>
   <body>
     <h2>Hello World!</h2>
+    <h3>This is The UnderLine</h3>
     <h4 id="datetime"></h4>
 <!-- Python code below is intentionally left-aligned to utilise full width  -->
 <py-script>
@@ -24,8 +25,7 @@ from js import document as popup  # DOM for this popup page
 from datetime import datetime
 
 # Use print to update the popup
-print("This is the current date and time in ISO8601 format, courtesy of Python and PyScript.<br><br>")
-
+print("Hello, this is a Python extension by The UnderLine")
 # Update an element in the popup directly
 insert_content = popup.getElementById('datetime')
 insert_content.innerHTML = f"<i>{datetime.now().isoformat()}</i>"
