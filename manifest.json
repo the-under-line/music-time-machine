@@ -5,7 +5,7 @@
   "manifest_version": 3,
   "icons": {
     "128": "icons/icon-128.png",
-    "64": "icons/icon-64.png",
+    "64": "icons/icon-64.png"
   },
   "action": {
     "default_popup": "popup.html",
