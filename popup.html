@@ -9,7 +9,7 @@
       src = "runtime/pyodide.js"
       name = "pyodide-0.21.3"
       lang = "python"
-      packages = ['pyperclip']
+      packages = ['pyperclip', 'beautifulsoup4', 'spotipy', 'requests']
     </py-config>
     <link rel="icon" type="icons/png" href="/icon-128.png" />
     <link rel="stylesheet" href="popup.css" />
@@ -22,6 +22,72 @@
 <py-script> 
 from js import document as popup  # DOM for this popup page
 from datetime import datetime
+import requests
+from bs4 import BeautifulSoup
+import spotipy
+from spotipy.oauth2 import SpotifyOAuth
+from time import sleep
+import random
+import pyperclip
+
+
+track_uris = []
+
+CLIENT_ID = "22dfb570e6be4b688a4e80d09592e2ab"
+CLIENT_SECRET = "2eb936e4d34943d68738d13b92f4e42a"
+
+
+
+chosen_year = input("Which year would you like to travel to? Type the date in this format YYYY-MM-DD: \n")
+
+
+header = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0"}
+response = requests.get(f"https://www.billboard.com/charts/hot-100/{chosen_year}", headers=header)
+
+if response.text == "":
+    sleep(random.randint(35, 65))
+    response = requests.get(f"https://www.billboard.com/charts/hot-100/" + chosen_year)
+
+
+
+soup = BeautifulSoup(response.text, "html.parser")
+
+titles = soup.find_all(id="title-of-a-story", name="h3", class_="a-no-trucate")
+musicians = soup.find_all(name="span", class_="a-truncate-ellipsis-2line")
+
+song_dict = {}
+for title in titles:
+    title_string = title.string
+    musician_string = musicians[titles.index(title)].string
+    song_dict[title_string.strip()] = musician_string.strip()
+
+
+scope = "playlist-modify-public"
+
+sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope,
+                                               client_id=CLIENT_ID, client_secret=CLIENT_SECRET,
+                                               redirect_uri="https://example.com", cache_path=".cache"))
+
+user_id = sp.current_user()["id"]
+display_name = sp.current_user()["display_name"]
+
+
+year = chosen_year.split("-")[0]
+uri_list = []
+for song in song_dict:
+    results = sp.search(q=f"{song}, by {song_dict[song]}")
+    uri = results["tracks"]["items"][0]["uri"]
+    uri_list.append(uri)
+
+
+
+
+playlist_info = sp.user_playlist_create(user=user_id, name=f"{chosen_year} Billboard Top 100")
+playlist_url = playlist_info["external_urls"]["spotify"]
+playlist_uri = playlist_info["uri"]
+pyperclip.copy(text=playlist_url)
+sp.playlist_add_items(playlist_id=playlist_uri, items=uri_list)
+
 
 </py-script>
   </body>
