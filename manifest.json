@@ -1,6 +1,6 @@
 {
-  "name": "PyScript Demo 1",
-  "description": "Build Chrome Extensions in Python/PyScript",
+  "name": "Music Time Machine",
+  "description": "Use Billboard Hot 100 and Spotify to create a list of the top 100 songs for a date of your choice.",
   "version": "1.0",
   "manifest_version": 3,
   "icons": {
